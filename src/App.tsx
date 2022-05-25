@@ -1,13 +1,20 @@
+import { useEffect, useState } from "react";
 import { remult, setAuthToken } from "./common";
 import ChangePassword from "./components/changePassword/changePassword";
+import { listenToServerEvents } from "./components/realtime/list-to-server-events";
 import SignIn from "./components/signIn/signIn";
 import Users from "./components/users";
 import { terms } from "./shared/terms";
 
 
 function App() {
-
-
+  const [message, setMessages] = useState<string[]>([]);
+  useEffect(() => listenToServerEvents('/api/stream', {
+    onMessage: message => {
+      setMessages(m => [...m, message]);
+      console.log({message});
+    }
+  }), [])
   const signOut = () => {
     setAuthToken(null);
     window.location.reload();
